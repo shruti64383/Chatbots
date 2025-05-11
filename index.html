@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Chatbot</title>
+    <style>
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
+        #chat-container {
+            width: 380px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        #chat-header {
+            background: #CF9FFF;
+            color: white;
+            padding: 16px 20px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        #chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #chat-messages::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .message {
+            max-width: 80%;
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background: #CF9FFF;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            max-width: 75%;
+        }
+        
+        .bot-message {
+            background: #f1f3f6;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            max-width: 85%;
+        }
+        
+        .typing-indicator {
+            display: inline-block;
+            background: #f1f3f6;
+            padding: 12px 16px;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+        
+        .typing-dot {
+            height: 8px;
+            width: 8px;
+            background-color: #999;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) {
+            animation-delay: 0ms;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 150ms;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 300ms;
+        }
+        
+        #input-container {
+            display: flex;
+            padding: 12px;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            outline: none;
+            font-size: 15px;
+        }
+        
+        #send-btn {
+            width: 44px;
+            height: 44px;
+            margin-left: 8px;
+            background: #CF9FFF;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        #send-btn:hover {
+            background: #8c06c1;
+        }
+        
+        #send-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        .quick-choice-container {
+    max-width: 85%;
+    margin: 4px 0; /* Reduced margin */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Space between buttons */
+}
+
+.choice-btn {
+    background: white;
+    border: 1px solid #CF9FFF;
+    color: #CF9FFF;
+    padding: 10px 16px;
+    border-radius: 18px;
+    text-align: center; /* Changed to center for better appearance of small buttons */
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    flex: 0 0 auto; /* Don't grow or shrink, but can be smaller than min-width */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Remove min-width to allow natural sizing */
+    /* max-width: 100% is maintained */
+}
+
+/* Special style for short buttons (4 characters or less) */
+.choice-btn.short {
+    display: inline-block;
+    margin-right: 8px; /* Space between inline buttons */
+    flex: none; /* Override flex for short buttons */
+}
+        
+        .choice-btn:hover {
+            background: #CF9FFF;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">
+            Tag AI
+        </div>
+        <div id="chat-messages"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        let isWaitingForResponse = false;
+
+        function showTypingIndicator() {
+            return addMessage('bot', '', true);
+        }
+
+        function removeTypingIndicator(indicator) {
+            if (indicator && indicator.parentNode) {
+                indicator.parentNode.removeChild(indicator);
+            }
+        }
+
+        function removeChoiceButtons() {
+    const choiceContainers = document.querySelectorAll('.quick-choice-container');
+    choiceContainers.forEach(container => {
+        container.remove();
+    });
+}
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message || isWaitingForResponse) return;
+
+            removeChoiceButtons();
+            
+            addMessage('user', message);
+            userInput.value = '';
+            
+            const typingIndicator = showTypingIndicator();
+            isWaitingForResponse = true;
+            
+            try {
+                const response = await fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                const data = await response.json();
+                removeTypingIndicator(typingIndicator);
+                addMessage('bot', data.response);
+                if (data.response.includes("That seems a bit complex") || data.end_conversation === false) {
+                        choiceButton();  // Trigger your function here
+                    } 
+                        // Skip else block for 'greetings' and 'end' choices
+                    else if (data.response === 'How can I help you?' || data.response === 'Have a good day!!!') {
+                        // Do nothing for 'greetings' or 'end'
+                    } else { 
+                        addMessage('bot', "Want to ask something else?");
+                        // Reduced delay before showing choices
+                        setTimeout(() => {
+                            addWishButtons();
+                        }, 100);  // Reduced delay for showing buttons
+                    }
+            } catch (error) {
+                removeTypingIndicator(typingIndicator);
+                addMessage('bot', "Sorry, I'm having trouble connecting.");
+                console.error('Error:', error);
+            } finally {
+                isWaitingForResponse = false;
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }); 
+
+        function addMessage(sender, message, isBotThinking = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender.toLowerCase()}-message`;
+            
+            if (isBotThinking) {
+                messageDiv.innerHTML = `
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                `;
+            } else {
+                messageDiv.textContent = message;
+                
+                const approxWidth = Math.min(
+                    Math.max(message.length * 8, 60), 
+                    sender === 'user' ? 280 : 320
+                );
+                messageDiv.style.width = `${approxWidth}px`;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageDiv;
+        }
+        
+        function addChoiceButtons() {
+            const choices = [
+                { text: "How to sign up?", value: "sign_up" },
+                { text: "How to get a referral code?", value: "referral_code" },
+                { text: "How to add a review?", value: "add_review" },
+                { text: "How to register a business?", value: "register_business" }
+            ];
+            
+            // Calculate widths based on text length
+            choices.forEach(choice => {
+                const container = document.createElement('div');
+                container.className = 'quick-choice-container';
+                
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice.text;
+                btn.setAttribute('data-choice', choice.value);
+                
+                // Set width based on text length
+                //const width = Math.min(Math.max(choice.text.length * 10, 120), 280);
+                btn.style.width = `clamp(14ch, ${choice.text.length + 4}ch, 28ch)`;
+                
+                btn.addEventListener('click', (e) => {
+                    const choice = e.target.getAttribute('data-choice');
+                    handleChoiceSelection(choice);
+                });
+                
+                container.appendChild(btn);
+                chatMessages.appendChild(container);
+            });
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function choiceButton() {
+            const choices = [
+                { text: "Want to learn about feedback?", value: "add_feedback" } 
+            ];
+            
+            // Calculate widths based on text length
+            choices.forEach(choice => {
+                const container = document.createElement('div');
+                container.className = 'quick-choice-container';
+                
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice.text;
+                btn.setAttribute('data-choice', choice.value);
+                
+                // Set width based on text length
+                const width = Math.min(Math.max(choice.text.length * 10, 120), 280);
+                btn.style.width = `${width}px)`;
+                
+                btn.addEventListener('click', (e) => {
+                    const choice = e.target.getAttribute('data-choice');
+                    handleChoiceSelection(choice);
+                });
+                
+                container.appendChild(btn);
+                chatMessages.appendChild(container);
+            });
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function addWishButtons() {
+    const choices = [
+        { text: "Yes", value: "greetings" },
+        { text: "No", value: "end" },
+        // You can add more choices here
+    ];
+    
+    // Create a single container for all buttons
+    const container = document.createElement('div');
+    container.className = 'quick-choice-container';
+    
+    // Group buttons by length to optimize layout
+    choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.text;
+        btn.setAttribute('data-choice', choice.value);
+        
+        // Add 'short' class for buttons with 4 or fewer characters
+        if (choice.text.length <= 4) {
+            btn.classList.add('short');
+        }
+        
+        btn.addEventListener('click', (e) => {
+            const choiceValue = e.target.getAttribute('data-choice');
+            handleChoiceSelection(choiceValue);
+        });
+        
+        container.appendChild(btn);
+    });
+    
+    // // Clear any existing buttons first (if needed)
+    // const existingContainers = chatMessages.querySelectorAll('.quick-choice-container');
+    // existingContainers.forEach(el => el.remove());
+    
+    chatMessages.appendChild(container);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+        function handleChoiceSelection(choice) {
+            removeChoiceButtons();
+            const choiceMessages = {
+                'sign_up': 'How to sign up?',
+                'referral_code': 'How to get a referral code?',
+                'add_review': 'How to add a review?',
+                'register_business': 'How to register a business?',
+                'add_feedback': 'Want to learn about feedback?',
+                'greetings': 'Yes',
+                'end': 'No'
+            };
+            
+            // Add user's choice as a message
+            addMessage('user', choiceMessages[choice]);
+
+            
+            // Show typing indicator
+            const typingIndicator = showTypingIndicator();
+            isWaitingForResponse = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: choiceMessages[choice] })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    removeTypingIndicator(typingIndicator);
+                    addMessage('bot', data.response);
+                    if (data.response.includes("That seems a bit complex") || data.end_conversation === false) {
+                        choiceButton();  // Trigger your function here
+                    } 
+                        // Skip else block for 'greetings' and 'end' choices
+                    else if (choice === 'greetings' || choice === 'end') {
+                        // Do nothing for 'greetings' or 'end'
+                    } else { 
+                        addMessage('bot', "Want to ask something else?");
+                        // Reduced delay before showing choices
+                        setTimeout(() => {
+                            addWishButtons();
+                        }, 100);  // Reduced delay for showing buttons
+                    }
+                })
+                .catch(error => {
+                    removeTypingIndicator(typingIndicator);
+                    addMessage('bot', "Sorry, I'm having trouble connecting.");
+                    console.error('Error:', error);
+                })
+                .finally(() => {
+                    isWaitingForResponse = false;
+                });
+            }, 500);
+        }
+
+        userInput.addEventListener('input', () => {
+    if (userInput.value.trim().length > 0) {
+        removeChoiceButtons();
+    }
+});
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                addMessage('bot', "Hey there! I'm your TagAboutIt buddy. Don't worry if things seem new. I'm here to guide you!");
+                // Reduced delay before showing choices
+                setTimeout(addChoiceButtons, 100);
+            }, 500);
+            userInput.focus();
+        });
+    </script>
+</body>
+</html>
