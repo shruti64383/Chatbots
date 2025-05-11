@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import re
 import spacy
@@ -210,6 +210,10 @@ def find_best_response(user_input):
             return data["response"]
     
     return None
+
+@app.route('/')
+def home():
+    return send_file('index.html')
 
 @app.route('/chat', methods=['POST'])
 def chat():
