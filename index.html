@@ -249,7 +249,7 @@
             isWaitingForResponse = true;
             
             try {
-                const response = await fetch('http://localhost:5000/chat', {
+                const response = await fetch('/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -442,7 +442,7 @@
             
             // Simulate API call
             setTimeout(() => {
-                fetch('http://localhost:5000/chat', {
+                fetch('/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
