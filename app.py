@@ -27,6 +27,7 @@ knowledge_base = {
             r"^start$"
         ]
     },
+
     "end": {
         "response": "Have a good day!!!",
         "patterns": [
@@ -34,44 +35,145 @@ knowledge_base = {
     ],
     "entities": ["BYE"]
   },
+
     "referral_code": {
-        "response": "You can request a referral code through any of the following ways:\n1. From a TagAboutIt user in your contacts\n2. By scanning a business QR code\n3. By joining communities within the app",
-        "patterns": [
-            r"\b(referral code|referral|code)\b",
-            r"\bhow.*get.*referral\b",
-            r"\bwhere.*find.*referral code\b"
-    ],
-    "entities": ["REFERRAL", "CODE"]
-  },
-  "add_review": {
-    "response": "To add a review:\n1. Go to your profile > Personal > My Reviews > Add Review, then fill in the details.\n2. Or, open the QuickSelect page > Tap the \"Write a Review\" button, and choose the category you're interested in.",
+    "response": """You can obtain a referral code in one of the following ways:<br><br>
+      • <strong>From Your Contacts:</strong> If any of your phonebook contacts are already registered, you can request a referral code from them.<br><br>
+      • <strong>Scan a Business QR Code:</strong> Scanning a business's QR code will provide a referral code and automatically follow that business. You can then start leaving reviews for them.<br><br>
+      • <strong>Explore Communities:</strong> Browse and join communities. For public communities, you’ll be connected instantly. For private communities, you’ll need to wait for referral code approval.<br>""",
     "patterns": [
-      r"\b(review|rating|feedback)\b",
+      r"\b(?!.*without)(need|looking for)\b.*\b(referral code)\b", 
+      r"\b(how|where|ways)\b.*\b(get|find|acquire)\b.*\b(referral code|referral)\b",
+         
+    ],
+    "entities": ["REFERRAL_CODE_SOURCES", "HOW_TO_GET_REFERRAL"],
+    "priority": 50 
+
+    },
+
+    "add_review": {
+    "response": """
+     You can add a review by following one of these steps: <br><br>
+
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 1: Navigate to My Profile</strong><br><br>
+
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 2: Select Personal</strong><br><br>
+
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 3: Select My Reviews/ Recommadation</strong><br><br>
+
+    <details>
+    <summary><strong>Step 4: Click on Add Review/Recommadations and earn eTags</strong></summary><br>
+    You will be prompted with a list of categories. Please selct one of them. It will redirect you to fill in the required review/recommadation details. Now simply fill out the form with the required details and  submit it.<br>
+    </details><br>
+
+    <strong class="space">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OR </strong><br><br>
+     
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 1: Open the QuickSelect page </strong><br><br>
+     
+    <details>
+    <summary><strong>Step 2: Tap Write a Review/Recommadation</strong></summary><br> 
+    Choose the category you're interested in. Please selct one of them. It will redirect you to fill in the required review/recommadation
+     details. Now simply fill out the form with the required details and  submit it.
+    </details><br>""",
+
+    "patterns": [
+      r"\b(review|rating|recommendation|recommend|suggest)\b",
+      r"\bhow.*add.*recommendation\b",
       r"\bhow.*add.*review\b",
       r"\bwhere.*write.*review\b"
-    ],
-    "entities": ["REVIEW", "RATING"]
-  },
-  "add_recommendation": {
-    "response": "To add a recommendation:\n1. Go to your profile > Personal > My Recommendations > Add Recommendation, then fill in the details.\n2. Or, open the QuickSelect page > Tap the \"Write a Recommendation\" button, and choose the category you're interested in.",
-    "patterns": [
-      r"\b(recommendation|recommend|suggest)\b",
-      r"\bhow.*add.*recommendation\b",
       r"\bwhere.*write.*recommendation\b"
     ],
-    "entities": ["RECOMMENDATION"]
+    "entities": ["REVIEW", "RATING", "RECOMMENDATION"]
   },
-  "register_business": {
-    "response": "To register your business:\nGo to your profile > Sign Up Details > Professional Details > Add My Details > Select 'Professional', then fill in your business information and save.",
+  
+    "register_business": {
+    "response": """
+    Follow these steps to register your business on the platform:<br><br>
+
+    <details>
+    <summary><strong>Step 1: Navigate to your profile</strong></summary>
+    <br>
+    Click on the light blue section right below your Profile Picture
+    </details><br> 
+
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 2: Click on Sign Up Details</strong><br><br>
+
+    <details>
+    <summary><strong>Step 3: Spot on Professional Details</strong></summary>
+    <br>
+    Now click on Add My Details </strong><br>
+    </details><br>
+
+    <details>
+    <summary><strong>Step 4: Select Professional for profile type</strong></summary>
+    <br> 
+    Enter your business information and save the changes
+    </details><br>""", 
+
     "patterns": [
       r"\b(business|register|professional)\b",
       r"\bhow.*register.*business\b",
-      r"\badd.*business profile\b"
+      r"\badd.*business profile\b",
+      r"\bwhere.*list.*profession\b",
+      r"\bhow.*add.*professional details\b",
+      r"\bset.*up.*professional profile\b",
+      r"\bupdate.*professional information\b"
     ],
-    "entities": ["BUSINESS", "REGISTRATION"]
+    "entities": ["BUSINESS", "REGISTRATION", "PROFESSIONAL"]
   },
-  "add_hobby": {
-    "response": "To add your hobbies:\nNavigate to your profile > Sign Up Details > Social Details > Add My Details > Add Hobby, then choose from the available list or type your own.",
+
+    "find_community": {
+    "response": """
+     Follow these steps to find a community to join: <br><br>
+
+     <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 1: Navigate to My Profile</strong><br><br>
+
+     <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 2: Select Network</strong><br><br>
+
+     <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 3: Tap on My Communities</strong><br><br>
+
+     <details>
+     <summary><strong>Step 4: Go to Suggestions tab</strong></summary><br><br> 
+     Search the community of your choice by typing a few words, a list of related communities will be there. Join the communities of your interest.<br>
+     </details>""",
+
+    "patterns": [
+      r"\b^(?!.*what).*\b(community)\b",
+      r"\b(community|join|find)\b",
+      r"\bhow.*find.*community\b",
+      r"\bsearch.*for.*communities\b",
+      r"\bwhere.*join.*community\b",
+      r"\bdiscover.*new.*communities\b"
+    ],
+    "entities": ["COMMUNITY", "NETWORK"]
+  },
+
+    "add_hobby": {
+    "response": """
+      Add your hobbies to your profile using these steps:<br><br>
+
+      <details>
+      <summary><strong>Step 1: Navigate to your profile</strong></summary>
+      <br>
+      Click on the light blue section right below your Profile Picture
+      </details><br>
+
+      <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 2: Click on Sign Up Details</strong><br><br>
+
+      <details>
+      <summary><strong>Step 3: Spot on Social Details</strong></summary>
+      <br>
+      Now click on Add My Details </strong><br>
+      </details>
+
+      <br>
+      <details>
+      <summary><strong>Step 4: Add Hobby</strong></summary>
+      <br>
+      Choose from the available list or type your own.<br>
+      </details><br>""",
+
     "patterns": [
       r"\b(hobby|interest|activity)\b",
       r"\bhow.*add.*hobby\b",
@@ -79,6 +181,7 @@ knowledge_base = {
     ],
     "entities": ["HOBBY", "INTEREST"]
   },
+
   "community": {
     "response": "A community on TagAboutIt is a group where users with shared interests can connect, interact, and share content.",
     "patterns": [
@@ -88,6 +191,7 @@ knowledge_base = {
     ],
     "entities": ["COMMUNITY"]
   },
+
   "circle": {
     "response": "A circle is your personal network of trusted users or friends within TagAboutIt, where you can connect and share experiences.",
     "patterns": [
@@ -97,17 +201,75 @@ knowledge_base = {
     ],
     "entities": ["CIRCLE", "NETWORK"]
   },
-  "request_suggestion": {
-    "response": "To create a request:\nOpen the QuickSelect page > Tap the \"Create a Request\" button, and choose the category you're interested in.",
+
+    "request_suggestion": {
+    "response": """
+    Requesting a suggestion is quick and easy:</strong><br><br>
+    
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 1: Open the QuickSelect page </strong><br><br>
+    
+    <details>
+    <summary><strong>Step 2: Tap on Create a Request </strong></summary><br>
+    You will now be able to see categories to select based upon your query type<br>
+    </details><br>
+
+    <details>
+    <summary><strong>Step 3: Select the category you're interested</strong></summary><br>
+    Simply fill out the form with the required details and your query. Once you submit it, you’ll receive a suggestion as soon as someone responds
+    </details><br>""",
+
     "patterns": [
-      r"\b(suggestion|request|ask)\b",
+      r"\b(suggestion|request|ask|suggestions)\b",
       r"\bhow.*request.*suggestion\b",
       r"\bwhere.*ask.*recommendation\b"
     ],
     "entities": ["SUGGESTION", "REQUEST"]
   },
-  "sign_up": {
-    "response": "To sign up:\nOpen the TagAboutIt app, tap on \"Sign Up\" > Verify your mobile number > Enter a referral code.",
+
+    "sign_up": {
+    "response": """To sign up, please follow the steps below:<br><br>
+    <details>
+    <summary><strong>Step 1: Select a Sign-Up Method </strong></summary>
+    <br>
+    Choose one of the following options to begin:<br><br>
+    • Sign up with Email<br>
+    • Sign up with Google<br>
+    • Sign up with Apple ID<br>
+    </details><br>
+
+    <details>
+    <summary><strong>Step 2: Fill in Your Details </strong></summary>
+    <br>
+    After selecting a sign-up method, you'll be directed to a registration page. Enter the required basic information such as:<br><br>
+    • Full Name<br>
+    • Username<br>
+    • Email Address<br>
+    • Phone Number<br>
+    • Date of Birth<br>
+    • Password<br>
+    </details><br>
+
+    <details>
+    <summary><strong>Step 3: Enter a Referral Code </strong></summary>
+    <br>
+    After completing your basic details, you'll be prompted to enter a referral code.<br>
+    To know about referral codes, 
+      <details class="custom-underline"><summary>click here</summary>
+      <br> 
+      <br>
+      You can obtain a referral code in one of the following ways:<br><br>
+      • <strong>From Your Contacts:</strong> If any of your phonebook contacts are already registered, you can request a referral code from them.<br><br>
+      • <strong>Scan a Business QR Code:</strong> Scanning a business's QR code will provide a referral code and automatically follow that business. You can then start leaving reviews for them.<br><br>
+      • <strong>Explore Communities:</strong> Browse and join communities. For public communities, you'll be connected instantly. For private communities, you’ll need to wait for referral code approval.<br>
+      </details><br>
+    </details><br> 
+
+    <details>
+    <summary><strong>(Optional) Set Networking Preference </strong></summary>
+    <br>
+    After signing up, you have the option to add networking preferences by sharing your current industry and hobbies. This helps others connect with you for professional insights or shared interests. You may also skip this step and explore the app freely.<br>
+    </details>""",
+
     "patterns": [
       r"\b(sign up|register|join)\b",
       r"\bhow.*sign up\b",
@@ -115,17 +277,46 @@ knowledge_base = {
     ],
     "entities": ["SIGNUP", "REGISTRATION"]
   },
-  "sign_up_without_referral": {
-    "response": "Yes, you can skip the referral code step during sign-up. However, entering a referral code may unlock extra features if you have one.",
-    "patterns": [
-      r"\b(without referral|no referral|skip referral)\b",
-      r"\bcan.*sign up.*without.*referral\b",
-      r"\bregister.*no.*code\b"
+
+    "sign_up_without_referral": {
+    "response": """You must enter a referral code during sign-up, as it is required to proceed.<br>
+     To know about referral codes,
+
+      <details class="custom-underline"><summary>click here</summary>
+      <br> 
+      <br>
+      You can obtain a referral code in one of the following ways:<br><br>
+      • <strong>From Your Contacts:</strong> If any of your phonebook contacts are already registered, you can request a referral code from them.<br><br>
+      • <strong>Scan a Business QR Code:</strong> Scanning a business's QR code will provide a referral code and automatically follow that business. You can then start leaving reviews for them.<br><br>
+      • <strong>Explore Communities:</strong> Browse and join communities. For public communities, you'll be connected instantly. For private communities, you’ll need to wait for referral code approval.<br>
+      </details><br>""",
+
+    
+  "patterns": [
+        
+      r"\b(can i|is it possible)\b.*\b(sign\s*up|register|join)\b.*\b(without|no)\b.*\b(referral|ref|code)\b",
+      r"\b(sign\s*up|register)\b.*\b(without|no)\b.*\b(referral|ref)\b",
+       
+      r"\b(do i need|is a referral required)\b.*\b(to (sign\s*up|register))\b"
     ],
-    "entities": ["SIGNUP", "REFERRAL"]
-  },
-  "add_feedback": {
-    "response": "To add feedback:\nGo to your profile > Feedback & Report > Add Feedback, then fill in the details.",
+    "entities": ["SIGNUP_REQUIREMENTS", "REFERRAL_POLICY"],
+    "priority": 100   
+    },
+
+    "add_feedback": {
+    "response": """
+     Share your feedback by following these steps:<br><br>
+
+     <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 1: Navigate to My Profile</strong><br><br>
+
+    <strong>&nbsp;&nbsp;&nbsp;&nbsp;Step 2: Select Feedback & Report</strong><br><br>
+
+    <details>
+    <summary><strong>Step 3: Click on Add your valuable feedback</strong></summary><br>
+     You will be redirected  to fill in the required details. Here you can fill in the comment box to describe your issues as well as add photos/videos to support your description.
+     Now you're ready to fill out the form with the required details and  submit it.<br>
+    </details><br> """,
+
     "patterns": [
       r"\b(feedback|report|issue)\b",
       r"\bhow.*add.*feedback\b",
@@ -236,4 +427,4 @@ def chat():
     return jsonify({'response': response})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

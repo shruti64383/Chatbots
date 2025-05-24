@@ -195,12 +195,40 @@
             background: #CF9FFF;
             color: white;
         }
+
+         
+/* Only affects <details> with the class 'custom-underline' */
+details.custom-underline summary {
+  list-style: none;
+  cursor: pointer;
+  border-bottom: 1px dashed #000;
+  display: inline-block;
+  padding: bottom 2px ; 
+}
+
+details.custom summary{
+    list-style: none;
+}
+
+details.custom-underline summary::-webkit-details-marker {
+  display: none;
+}
+
+details.custom-underline[open] summary {
+  border-bottom-style: solid;
+  padding: bottom 2px ;
+}
+
+.space{
+    align-items: center;
+}
+ 
     </style>
 </head>
 <body>
     <div id="chat-container">
         <div id="chat-header">
-            Tag AI
+            TagBot
         </div>
         <div id="chat-messages"></div>
         <div id="input-container">
@@ -302,7 +330,11 @@
                     </div>
                 `;
             } else {
-                messageDiv.textContent = message;
+                if (sender === 'bot') {
+                   messageDiv.innerHTML = message;
+                } else {
+                   messageDiv.textContent = message;
+                }
                 
                 const approxWidth = Math.min(
                     Math.max(message.length * 8, 60), 
@@ -320,7 +352,7 @@
             const choices = [
                 { text: "How to sign up?", value: "sign_up" },
                 { text: "How to get a referral code?", value: "referral_code" },
-                { text: "How to add a review?", value: "add_review" },
+                { text: "How to add a review/recommadation?", value: "add_review" },
                 { text: "How to register a business?", value: "register_business" }
             ];
             
@@ -425,7 +457,7 @@
             const choiceMessages = {
                 'sign_up': 'How to sign up?',
                 'referral_code': 'How to get a referral code?',
-                'add_review': 'How to add a review?',
+                'add_review': 'How to add a review/recommadation?',
                 'register_business': 'How to register a business?',
                 'add_feedback': 'Want to learn about feedback?',
                 'greetings': 'Yes',
